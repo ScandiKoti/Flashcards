@@ -1,6 +1,7 @@
 import json
 import random
 import io
+import argparse
 
 
 class FlashCards:
@@ -61,8 +62,9 @@ class FlashCards:
         except KeyError:
             self.user_output(f'Can\'t remove "{term}": there is no such card.')
 
-    def import_cards(self):
-        file_name = self.user_input('File name:\n')
+    def import_cards(self, file_name=None):
+        if not file_name:
+            file_name = self.user_input('File name:\n')
         try:
             with open(file_name, 'r') as json_file:
                 cards_dict_json = json.load(json_file)
@@ -71,8 +73,9 @@ class FlashCards:
         except FileNotFoundError:
             self.user_output('File not found.')
 
-    def export_cards(self):
-        file_name = self.user_input('File name:\n')
+    def export_cards(self, file_name=None):
+        if not file_name:
+            file_name = self.user_input('File name:\n')
         with open(file_name, 'w') as json_file:
             json.dump(self.cards_dict, json_file)
             self.user_output(f'{len(self.cards_dict)} cards have been saved.')
@@ -147,8 +150,16 @@ class FlashCards:
 
 def main():
     game = FlashCards()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--import_from")
+    parser.add_argument("--export_to")
+    args = parser.parse_args()
+    if args.import_from:
+        game.import_cards(args.import_from)
     game.game_menu()
     print('Bye bye!')
+    if args.export_to:
+        game.export_cards(args.export_to)
 
 
 if __name__ == '__main__':
